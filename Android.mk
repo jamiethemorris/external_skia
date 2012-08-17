@@ -429,6 +429,10 @@ LOCAL_SRC_FILES += \
     src/opts/SkBitmapProcState_arm_neon.cpp \
     src/opts/SkBitmapProcState_matrixProcs_neon.cpp \
     src/opts/SkBlitRow_opts_arm_neon.cpp
+
+LOCAL_CFLAGS += -DNEON_BLITANTIH
+LOCAL_SRC_FILES += \
+	src/core/asm/SkBlitter_RGB16_NEON.S
 endif
 
 LOCAL_SRC_FILES += \
