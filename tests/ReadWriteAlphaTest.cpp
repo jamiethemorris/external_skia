@@ -7,7 +7,7 @@
  */
 
 // This test is specific to the GPU backend.
-#if SK_SUPPORT_GPU
+#if SK_SUPPORT_GPU && !defined(SK_BUILD_FOR_ANDROID)
 
 #include "Test.h"
 #include "SkGpuDevice.h"
@@ -104,9 +104,7 @@ static void ReadWriteAlphaTest(skiatest::Reporter* reporter, GrContext* context)
     REPORTER_ASSERT(reporter, match);
 }
 
-#ifndef SK_BUILD_FOR_ANDROID
 #include "TestClassDef.h"
 DEFINE_GPUTESTCLASS("ReadWriteAlpha", ReadWriteAlphaTestClass, ReadWriteAlphaTest)
 
-#endif
 #endif

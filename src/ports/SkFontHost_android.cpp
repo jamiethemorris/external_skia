@@ -498,6 +498,7 @@ static void dumpGlobalsLocked() {
     }
 
 }
+#endif
 
 
 static bool haveSystemFont(const char* filename) {
