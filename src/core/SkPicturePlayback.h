@@ -37,6 +37,7 @@ public:
     virtual ~SkPicturePlayback();
 
     void draw(SkCanvas& canvas);
+    void drawAltCanvas(SkAltCanvas& canvas);
 
     void serialize(SkWStream*) const;
 
@@ -45,6 +46,8 @@ public:
     // Can be called in the middle of playback (the draw() call). WIll abort the
     // drawing and return from draw() after the "current" op code is done
     void abort();
+
+    bool canUseGpuRendering()   {   return fCanUseGpuRendering; }
 
 private:
 
@@ -177,6 +180,7 @@ private:
 #ifdef SK_BUILD_FOR_ANDROID
     SkMutex fDrawMutex;
 #endif
+    bool fCanUseGpuRendering;
 };
 
 #endif

@@ -51,6 +51,14 @@ void SkBitmapProcShader::endSession() {
     this->INHERITED::endSession();
 }
 
+void SkBitmapProcShader::beginRect(int x, int y, int width, int height) {
+    fState.beginRect(x, y, width, height);
+}
+
+void SkBitmapProcShader::endRect() {
+    fState.endRect();
+}
+
 SkShader::BitmapType SkBitmapProcShader::asABitmap(SkBitmap* texture,
                                                    SkMatrix* texM,
                                                    TileMode xy[],
@@ -159,6 +167,18 @@ bool SkBitmapProcShader::setContext(const SkBitmap& device,
     #define TEST_BUFFER_EXTRA   0
 #endif
 
+#if defined(__ARM_HAVE_NEON)
+void clampx_nofilter_trans(const SkBitmapProcState& s,
+                                  uint32_t xy[], int count, int x, int y) ;
+
+void S16_opaque_D32_nofilter_DX(const SkBitmapProcState& s,
+                            const uint32_t* SK_RESTRICT xy,
+                            int count, uint32_t* SK_RESTRICT colors) ;
+
+void clampx_nofilter_trans_S16_D32_DX(const SkBitmapProcState& s,
+                                  uint32_t xy[], int count, int x, int y, uint32_t* SK_RESTRICT colors) ;
+#endif
+
 void SkBitmapProcShader::shadeSpan(int x, int y, SkPMColor dstC[], int count) {
     const SkBitmapProcState& state = fState;
     if (state.fShaderProc32) {
@@ -181,6 +201,12 @@ void SkBitmapProcShader::shadeSpan(int x, int y, SkPMColor dstC[], int count) {
             n = max;
         }
         SkASSERT(n > 0 && n < BUF_MAX*2);
+#if defined(__ARM_HAVE_NEON)
+        if( sproc == S16_opaque_D32_nofilter_DX && mproc == clampx_nofilter_trans ){
+            clampx_nofilter_trans_S16_D32_DX(state, buffer, n, x, y, dstC);
+        } else {
+#endif
+
 #ifdef TEST_BUFFER_OVERRITE
         for (int i = 0; i < TEST_BUFFER_EXTRA; i++) {
             buffer[BUF_MAX + i] = TEST_PATTERN;
@@ -193,7 +219,10 @@ void SkBitmapProcShader::shadeSpan(int x, int y, SkPMColor dstC[], int count) {
         }
 #endif
         sproc(state, buffer, n, dstC);
-
+        
+#if defined(__ARM_HAVE_NEON)
+        }
+#endif
         if ((count -= n) == 0) {
             break;
         }
@@ -201,6 +230,11 @@ void SkBitmapProcShader::shadeSpan(int x, int y, SkPMColor dstC[], int count) {
         x += n;
         dstC += n;
     }
+}
+
+int SkBitmapProcShader::shadeSpanMulti(int x, int y, SkPMColor dstC[], int count, int height) {
+    shadeSpan(x, y, dstC, count);
+    return 1;
 }
 
 void SkBitmapProcShader::shadeSpan16(int x, int y, uint16_t dstC[], int count) {
