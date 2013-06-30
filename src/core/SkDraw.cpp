@@ -1411,6 +1411,7 @@ void SkDraw::drawBitmap(const SkBitmap& bitmap, const SkMatrix& prematrix,
                 fimg.xfermode = mode;
 
                 fimg.isDither = paint.isDither();
+                fimg.isFilter = paint.isFilterBitmap();
                 fimg.colorFilter = (int)paint.getColorFilter();
 
                 fimg.alpha = paint.getAlpha();
