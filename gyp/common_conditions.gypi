@@ -17,7 +17,8 @@
         ],
       },
     ],
-    ['skia_os == "win"',
+
+    [ 'skia_os == "win"',
       {
         'defines': [
           'SK_BUILD_FOR_WIN32',
@@ -124,7 +125,57 @@
       },
     ],
 
-    ['skia_os in ["linux", "freebsd", "openbsd", "solaris", "nacl"]',
+    # The following section is common to linux + derivatives and android
+    [ 'skia_os in ["linux", "freebsd", "openbsd", "solaris", "nacl", "android"]',
+      {
+        'conditions': [
+          [ 'skia_warnings_as_errors', {
+            'cflags': [
+              '-Werror',
+            ],
+          }],
+          [ 'skia_arch_type == "arm" and arm_thumb == 1', {
+            'cflags': [
+              '-mthumb',
+            ],
+          }],
+          [ 'skia_arch_type == "arm" and armv7 == 1', {
+            'variables': {
+              'arm_neon_optional%': 0,
+            },
+            'defines': [
+              '__ARM_ARCH__=7',
+            ],
+            'cflags': [
+              '-march=armv7-a',
+              '-mfloat-abi=softfp',
+            ],
+            'conditions': [
+              [ 'arm_neon == 1', {
+                'defines': [
+                  '__ARM_HAVE_NEON',
+                ],
+                'cflags': [
+                  '-mfpu=neon',
+                ],
+                'ldflags': [
+                  '-march=armv7-a',
+                  '-Wl,--fix-cortex-a8',
+                ],
+              }],
+              [ 'arm_neon_optional == 1', {
+                'defines': [
+                  '__ARM_HAVE_OPTIONAL_NEON_SUPPORT',
+                ],
+              }],
+            ],
+          }],
+        ],
+      },
+    ],
+
+
+    [ 'skia_os in ["linux", "freebsd", "openbsd", "solaris", "nacl", "chromeos"]',
       {
         'defines': [
           'SK_SAMPLES_FOR_X',
@@ -164,14 +215,6 @@
               '-m64',
             ],
           }],
-          ['skia_arch_width == 32', {
-            'cflags': [
-              '-m32',
-            ],
-            'ldflags': [
-              '-m32',
-            ],
-          }],
           [ 'skia_os == "nacl"', {
             'defines': [
               'SK_BUILD_FOR_NACL',
@@ -187,6 +230,15 @@
           }, { # skia_os != "nacl"
             'include_dirs' : [
               '/usr/include/freetype2',
+            ],
+          }],
+          [ 'skia_asan_build', {
+            'cflags': [
+              '-fsanitize=address',
+              '-fno-omit-frame-pointer',
+            ],
+            'ldflags': [
+              '-fsanitize=address',
             ],
           }],
         ],
@@ -316,50 +368,21 @@
           '-fuse-ld=gold',
         ],
         'conditions': [
-          [ 'skia_warnings_as_errors == 1', {
+          [ 'skia_shared_lib', {
             'cflags': [
-              '-Werror',
+              '-fPIC',
+            ],
+            'defines': [
+              'GR_DLL=1',
+              'GR_IMPLEMENTATION=1',
+              'SKIA_DLL',
+              'SKIA_IMPLEMENTATION=1',
             ],
           }],
           [ 'skia_profile_enabled == 1', {
             'cflags': ['-g', '-fno-omit-frame-pointer', '-marm', '-mapcs'],
           }],
-          [ 'skia_arch_type == "arm" and arm_thumb == 1', {
-            'cflags': [
-              '-mthumb',
-            ],
           }],
-          [ 'skia_arch_type == "arm" and armv7 == 1', {
-            'variables': {
-              'arm_neon_optional%': 0,
-            },
-            'defines': [
-              '__ARM_ARCH__=7',
-            ],
-            'cflags': [
-              '-march=armv7-a',
-              '-mfloat-abi=softfp',
-            ],
-            'conditions': [
-              [ 'arm_neon == 1', {
-                'defines': [
-                  '__ARM_HAVE_NEON',
-                ],
-                'cflags': [
-                  '-mfpu=neon',
-                ],
-                'ldflags': [
-                  '-march=armv7-a',
-                  '-Wl,--fix-cortex-a8',
-                ],
-              }],
-              [ 'arm_neon_optional == 1', {
-                'defines': [
-                  '__ARM_HAVE_OPTIONAL_NEON_SUPPORT',
-                ],
-              }],
-            ],
-         }],
         ],
       },
     ],
