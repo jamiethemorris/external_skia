@@ -140,7 +140,6 @@ static void test_blend(skiatest::Reporter* reporter) {
     }
 }
 
-#if defined(SkLONGLONG)
 static int symmetric_fixmul(int a, int b) {
     int sa = SkExtractSign(a);
     int sb = SkExtractSign(b);
@@ -149,18 +148,17 @@ static int symmetric_fixmul(int a, int b) {
     b = SkApplySign(b, sb);
 
 #if 1
-    int c = (int)(((SkLONGLONG)a * b) >> 16);
+    int c = (int)(((int64_t)a * b) >> 16);
 
     return SkApplySign(c, sa ^ sb);
 #else
-    SkLONGLONG ab = (SkLONGLONG)a * b;
+    int64_t ab = (int64_t)a * b;
     if (sa ^ sb) {
         ab = -ab;
     }
     return ab >> 16;
 #endif
 }
-#endif
 
 static void check_length(skiatest::Reporter* reporter,
                          const SkPoint& p, SkScalar targetLen) {
@@ -476,12 +474,11 @@ static void TestMath(skiatest::Reporter* reporter) {
     unittest_fastfloat(reporter);
     unittest_isfinite(reporter);
 
-#ifdef SkLONGLONG
     for (i = 0; i < 10000; i++) {
         SkFixed numer = rand.nextS();
         SkFixed denom = rand.nextS();
         SkFixed result = SkFixedDiv(numer, denom);
-        SkLONGLONG check = ((SkLONGLONG)numer << 16) / denom;
+        int64_t check = ((int64_t)numer << 16) / denom;
 
         (void)SkCLZ(numer);
         (void)SkCLZ(denom);
@@ -495,7 +492,7 @@ static void TestMath(skiatest::Reporter* reporter) {
         REPORTER_ASSERT(reporter, result == (int32_t)check);
 
         result = SkFractDiv(numer, denom);
-        check = ((SkLONGLONG)numer << 30) / denom;
+        check = ((int64_t)numer << 30) / denom;
 
         REPORTER_ASSERT(reporter, result != (SkFixed)SK_NaN32);
         if (check > SK_MaxS32) {
@@ -537,7 +534,6 @@ static void TestMath(skiatest::Reporter* reporter) {
             REPORTER_ASSERT(reporter, (diff >> 7) == 0);
         }
     }
-#endif
 
     for (i = 0; i < 10000; i++) {
         SkFract x = rand.nextU() >> 1;
