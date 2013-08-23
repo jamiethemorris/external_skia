@@ -17,6 +17,7 @@
 #ifdef SK_BUILD_FOR_ANDROID
 #include <pthread.h>
 #include "SkLanguage.h"
+#include "SkPaintOptionsAndroid.h"
 #endif
 
 class SkAnnotation;
@@ -295,6 +296,20 @@ public:
                             flags, false to clear it.
     */
     void setDevKernText(bool devKernText);
+
+    enum FilterLevel {
+        kNone_FilterLevel,
+        kLow_FilterLevel,
+        kMedium_FilterLevel,
+        kHigh_FilterLevel
+    };
+
+    /**
+     *  Set the filter level. This affects the quality (and performance) of
+     *  drawing scaled images.
+     */
+    void setFilterLevel(FilterLevel) {}
+
 
     bool isFilterBitmap() const {
         return SkToBool(this->getFlags() & kFilterBitmap_Flag);
@@ -915,6 +930,9 @@ public:
     /** Returns the base glyph count for the strike associated with this paint
     */
     unsigned getBaseGlyphCount(SkUnichar text) const;
+
+    SkPaintOptionsAndroid& getPaintOptionsAndroid() { return *(SkPaintOptionsAndroid*)0; }
+    void setPaintOptionsAndroid(const SkPaintOptionsAndroid& options) {}
 #endif
 
     // returns true if the paint's settings (e.g. xfermode + alpha) resolve to
