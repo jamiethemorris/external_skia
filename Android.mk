@@ -544,6 +544,8 @@ LOCAL_SHARED_LIBRARIES += libfimg
 endif
 endif
 
+LOCAL_FDO_SUPPORT := true
+
 LOCAL_MODULE:= libskia
 
 include $(BUILD_SHARED_LIBRARY)
