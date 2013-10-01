@@ -52,6 +52,11 @@ ifeq ($(ARCH_ARM_HAVE_NEON),true)
 	LOCAL_CFLAGS += -D__ARM_HAVE_NEON
 endif
 
+# On Cortex-A9, a memset not using Neon is much faster.
+ifeq ($(strip $(TARGET_CPU_VARIANT)),cortex-a9)
+	LOCAL_CFLAGS += -DANDROID_USE_EXTERNAL_MEMSETX
+endif
+
 # using freetype's embolden allows us to adjust fake bold settings at
 # draw-time, at which point we know which SkTypeface is being drawn
 LOCAL_CFLAGS += -DSK_USE_FREETYPE_EMBOLDEN
