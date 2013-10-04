@@ -195,6 +195,10 @@ private:
     enum {
         kModeCount = kLastMode + 1
     };
+
+    friend class SkGraphics;
+    static void Term();
+
     typedef SkFlattenable INHERITED;
 };
 
