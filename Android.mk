@@ -443,6 +443,7 @@ LOCAL_SRC_FILES += \
 	src/opts/opts_check_arm.cpp \
 	src/opts/memset.arm.S \
 	src/opts/SkBitmapProcState_opts_arm.cpp \
+	src/opts/SkBlitMask_opts_arm.cpp \
 	src/opts/SkBlitRow_opts_arm.cpp
 
 else
