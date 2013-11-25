@@ -498,8 +498,6 @@ static void dumpGlobalsLocked() {
     }
 
 }
-#endif
-
 
 static bool haveSystemFont(const char* filename) {
     for (int i = 0; i < gSystemFonts.count(); i++) {
