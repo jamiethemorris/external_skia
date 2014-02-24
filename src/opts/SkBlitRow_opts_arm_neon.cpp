@@ -164,10 +164,14 @@ void S32A_D565_Opaque_neon(uint16_t* SK_RESTRICT dst,
                       "vld1.32    {d0[1]}, [%[src]]!          \n\t"
 
                       "11:                                        \n\t"
+#ifndef __clang__
                       // unzips achieve the same as a vld4 operation
                       "vuzpq.u16  q0, q1                      \n\t"
                       "vuzp.u8    d0, d1                      \n\t"
                       "vuzp.u8    d2, d3                      \n\t"
+#else
+                      "vld4.u8    {d0, d1, d2, d3}, [%[src]]! \n\t"
+#endif
                       // expand 0565 q12 to 8888 {d4-d7}
                       "vmovn.u16  d4, q12                     \n\t"
                       "vshr.u16   q11, q12, #5                \n\t"
