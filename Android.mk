@@ -628,6 +628,9 @@ LOCAL_CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1
 
 LOCAL_LDLIBS += -lpthread
 
+# Use GAS for now
+LOCAL_NO_INTEGRATED_AS_SUPPORT := true
+
 LOCAL_MODULE:= libskia
 
 #include stlport headers
